@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { CanvasMap } from "./components/CanvasMap.jsx";
-import { colors, districtTypes, initialGameState, specialEvents, trainTypes } from "./data.js";
-import { assignedTrainsets, createInitialState, districtById, getMetrics, getObjectives, getUnlocks, requiredTrainsets, saveGame, segmentCost, withSnapshot } from "./gameLogic.js";
+import { CanvasMap } from "./components/CanvasMap";
+import { colors, districtTypes, initialGameState, specialEvents, trainTypes } from "./data";
+import { assignedTrainsets, createInitialState, districtById, getMetrics, getObjectives, getUnlocks, requiredTrainsets, saveGame, segmentCost, withSnapshot } from "./gameLogic";
+import type { ConstructionMethod, TrainTypeId, Unlocks } from "./types";
 import logoUrl from "./logo-app.png";
 
 const modeLabels = {
@@ -16,12 +17,21 @@ const constructionLabels = {
   surface: "Surface / bridge",
 };
 
+const unlockLabels = {
+  c20: "C20 trainsets",
+  c30: "C30 trainsets",
+  express: "Express stops",
+  surface: "Surface builds",
+  grants: "State grants",
+  highFrequency: "3 min frequency",
+};
+
 export default function App() {
   const [game, setGame] = useState(createInitialState);
-  const [construction, setConstruction] = useState("tunnel");
+  const [construction, setConstruction] = useState<ConstructionMethod>("tunnel");
   const [activeView, setActiveView] = useState("build");
   const metrics = useMemo(() => getMetrics(game), [game]);
-  const unlocks = useMemo(() => getUnlocks(metrics.level), [metrics.level]);
+  const unlocks = useMemo(() => getUnlocks(game, metrics), [game, metrics]);
   const activeLine = game.lines[game.activeLine];
   const selectedDistrict = game.selected ? districtById(game.selected) : null;
   const anchorId = activeLine?.anchor && activeLine.stations.includes(activeLine.anchor)
@@ -83,13 +93,13 @@ export default function App() {
   }
 
   function applyUnlocks(draft, currentMetrics = getMetrics(draft)) {
-    const nextUnlocks = getUnlocks(currentMetrics.level);
+    const nextUnlocks = getUnlocks(draft, currentMetrics);
     const newlyUnlocked = Object.entries(nextUnlocks)
       .filter(([key, value]) => value && !draft.unlocked?.[key])
-      .map(([key]) => key);
+      .map(([key]) => unlockLabels[key] || key);
     draft.unlocked = { ...(draft.unlocked || {}), ...nextUnlocks };
     if (newlyUnlocked.length) {
-      draft.hint = `${draft.hint} New permits unlocked: ${newlyUnlocked.join(", ")}.`;
+      draft.hint = `${draft.hint} New unlocks: ${newlyUnlocked.join(", ")}.`;
     }
     return draft;
   }
@@ -156,6 +166,11 @@ export default function App() {
     patchGame((draft) => {
       const train = trainTypes[type];
       if (!train) return draft;
+      const currentUnlocks = getUnlocks(draft, getMetrics(draft));
+      if (!isTrainUnlocked(type, currentUnlocks)) {
+        draft.hint = `${train.label} trainsets unlock after: ${trainUnlockRequirement(type)}.`;
+        return draft;
+      }
       if (draft.budget < train.price) {
         draft.hint = `${train.label} trainset costs ${train.price} mkr.`;
         return draft;
@@ -275,8 +290,8 @@ export default function App() {
         draft.hint = "Not enough budget. Express upgrades cost 85 mkr.";
         return draft;
       }
-      if (!getUnlocks(getMetrics(draft).level).express) {
-        draft.hint = "Express service unlocks at Planner Level 2.";
+      if (!getUnlocks(draft, getMetrics(draft)).express) {
+        draft.hint = "Express service unlocks after one line connects homes and jobs.";
         return draft;
       }
 
@@ -426,7 +441,7 @@ export default function App() {
         draft.hint = "Council support must reach 58% before a funding vote can pass.";
         return draft;
       }
-      const hasGrantUnlock = getUnlocks(current.level).grants;
+      const hasGrantUnlock = getUnlocks(draft, current).grants;
       const capitalCost = hasGrantUnlock ? 2 : 3;
       if ((draft.politicalCapital || 0) < capitalCost) {
         draft.hint = `Funding request needs ${capitalCost} political capital.`;
@@ -548,7 +563,7 @@ export default function App() {
             <div><span>Unmet demand</span><strong>{metrics.unmetDemand.toLocaleString("en-US")}</strong></div>
           </div>
           <div className="policy-note">
-            {fleetAdvice(metrics)}
+            {fleetAdvice(metrics, unlocks)}
           </div>
           <div className="button-row">
             <button className="primary" type="button" onClick={runMonth}>Run month</button>
@@ -571,7 +586,7 @@ export default function App() {
                 key={`${line.name}-${index}`}
                 type="button"
                 onClick={() => selectLine(index)}
-                style={{ "--line-color": line.color }}
+                style={{ "--line-color": line.color } as React.CSSProperties}
               >
                 <span />
                 {line.name}
@@ -594,9 +609,9 @@ export default function App() {
 
           <label className="field">
             <span>Construction method</span>
-            <select aria-label="Construction method" value={construction} onChange={(event) => setConstruction(event.target.value)}>
+            <select aria-label="Construction method" value={construction} onChange={(event) => setConstruction(event.target.value as ConstructionMethod)}>
               {Object.entries(constructionLabels).map(([value, label]) => (
-                <option key={value} value={value} disabled={value === "surface" && !unlocks.surface}>{label}{value === "surface" && !unlocks.surface ? " (Level 2)" : ""}</option>
+                <option key={value} value={value} disabled={value === "surface" && !unlocks.surface}>{label}{value === "surface" && !unlocks.surface ? " (25% coverage)" : ""}</option>
               ))}
             </select>
           </label>
@@ -616,7 +631,7 @@ export default function App() {
               Extend line {selectedCost ? `${selectedCost} mkr` : ""}
             </button>
             <button type="button" disabled={!unlocks.express || !selectedDistrict || !selectedOnActiveLine} onClick={toggleExpress}>
-              Toggle express 85 mkr{!unlocks.express ? " (Level 2)" : ""}
+              Toggle express 85 mkr{!unlocks.express ? " (connect homes + jobs)" : ""}
             </button>
             <button className="danger" type="button" disabled={!selectedDistrict || !selectedOnActiveLine || activeLine.stations.length <= 1} onClick={removeStop}>
               Remove stop
@@ -628,19 +643,28 @@ export default function App() {
               <h2>Fleet</h2>
               <span>{Math.round(metrics.serviceReliability * 100)}% service</span>
             </div>
-            {Object.entries(trainTypes).map(([type, train]) => (
+            {Object.entries(trainTypes).map(([type, train]) => {
+              const trainId = type as TrainTypeId;
+              const trainUnlocked = isTrainUnlocked(trainId, unlocks);
+              return (
               <div className="train-card" key={type}>
                 <div>
                   <strong>{train.label}</strong>
                   <span>{train.description}</span>
-                  <small>{train.capacity} cap · {train.maintenance + train.energy} mkr/mo · owned {activeLine.fleet?.[type] || 0}</small>
+                  <small>
+                    {train.capacity} cap · {train.maintenance + train.energy} mkr/mo · owned {activeLine.fleet?.[type] || 0}
+                    {!trainUnlocked ? ` · unlock: ${trainUnlockRequirement(trainId)}` : ""}
+                  </small>
                 </div>
                 <div>
-                  <button type="button" disabled={game.budget < train.price} onClick={() => buyTrain(type)}>Buy {train.price}</button>
+                  <button type="button" disabled={!trainUnlocked || game.budget < train.price} onClick={() => buyTrain(trainId)}>
+                    Buy {train.price}
+                  </button>
                   <button type="button" disabled={!activeLine.fleet?.[type]} onClick={() => sellTrain(type)}>Sell</button>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
 
           <div className="button-row">
@@ -692,12 +716,15 @@ export default function App() {
 
         {activeView === "goals" && (
         <section className="tool-group compact" aria-label="Unlocks">
-          <h2>Permits</h2>
+          <h2>Progression</h2>
           <ul className="objectives">
-            <Unlock label="Express stops" done={unlocks.express} note="Level 2" />
-            <Unlock label="Surface builds" done={unlocks.surface} note="Level 2" />
-            <Unlock label="State grants" done={unlocks.grants} note="Level 3" />
-            <Unlock label="3 min frequency" done={unlocks.highFrequency} note="Level 4" />
+            <Unlock label="CX trainsets" done note="Start" />
+            <Unlock label="C20 trainsets" done={unlocks.c20} note={trainUnlockRequirement("C20")} />
+            <Unlock label="C30 trainsets" done={unlocks.c30} note={trainUnlockRequirement("C30")} />
+            <Unlock label="Express stops" done={unlocks.express} note="One line with homes + jobs" />
+            <Unlock label="Surface builds" done={unlocks.surface} note="25% coverage" />
+            <Unlock label="State grants" done={unlocks.grants} note="65% council support" />
+            <Unlock label="3 min frequency" done={unlocks.highFrequency} note="220k riders + 20 mkr net" />
           </ul>
         </section>
         )}
@@ -881,11 +908,25 @@ function Metric({ label, value }) {
   );
 }
 
-function fleetAdvice(metrics) {
+function isTrainUnlocked(type: TrainTypeId, unlocks: Unlocks) {
+  if (type === "CX") return true;
+  if (type === "C20") return unlocks.c20;
+  return unlocks.c30;
+}
+
+function trainUnlockRequirement(type: TrainTypeId) {
+  if (type === "CX") return "available from start";
+  if (type === "C20") return "18% coverage + 60k daily riders";
+  return "C20 objective + 10 mkr net/month + 60% support";
+}
+
+function fleetAdvice(metrics, unlocks: Unlocks) {
   if (!metrics.requiredTrainsets) return "Build connected segments before buying trains. A station alone creates no route capacity need.";
   if (!metrics.trainsets) return "No fleet assigned. Buy trains before expecting fare revenue.";
   if (metrics.trainsets < metrics.requiredTrainsets) return `Fleet shortage: buy about ${metrics.requiredTrainsets - metrics.trainsets} more trainset(s) before expanding fares or frequency.`;
-  if (metrics.utilization >= 88 && metrics.unmetDemand > 10000) return "Demand is pressing against capacity. More C20/C30 trainsets are likely valuable.";
+  if (metrics.utilization >= 88 && metrics.unmetDemand > 10000 && unlocks.c30) return "Demand is pressing against capacity. C30 trainsets are likely valuable.";
+  if (metrics.utilization >= 88 && metrics.unmetDemand > 10000 && unlocks.c20) return "Demand is pressing against capacity. C20 trainsets or another CX can help until C30 unlocks.";
+  if (metrics.utilization >= 88 && metrics.unmetDemand > 10000) return "Demand is pressing against capacity. Add CX service while working toward the C20 unlock.";
   if (metrics.utilization < 55) return "Capacity is underused. New trains are probably less valuable than building demand or lowering fares.";
   return "Fleet is reasonably matched to demand. Buy trains when you extend routes or lower headways.";
 }

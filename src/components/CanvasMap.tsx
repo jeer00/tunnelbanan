@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { districts } from "../data.js";
-import { districtById, distance } from "../gameLogic.js";
+import { districts } from "../data";
+import { districtById, distance } from "../gameLogic";
+import type { Line } from "../types";
 
 const width = 1400;
 const height = 1000;
@@ -436,6 +437,6 @@ function routeSegments(line) {
   return segments;
 }
 
-function assignedTrainsets(line) {
+function assignedTrainsets(line: Line): number {
   return Object.values(line.fleet || {}).reduce((sum, count) => sum + count, 0);
 }
