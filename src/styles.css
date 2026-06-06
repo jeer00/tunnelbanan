@@ -319,6 +319,28 @@ h2 {
   box-shadow: 0 1px 8px rgba(0, 0, 0, .22);
 }
 
+.overlay-control {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.overlay-control > span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.overlay-segmented {
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: 0;
+}
+
+.overlay-segmented button {
+  font-size: 12px;
+  min-width: 0;
+  padding: 0 6px;
+}
+
 .field {
   display: grid;
   gap: 6px;
@@ -650,6 +672,19 @@ button:disabled {
   width: 100%;
 }
 
+.map-loading {
+  align-items: center;
+  background: #10151b;
+  color: var(--muted);
+  display: flex;
+  font-size: 14px;
+  font-weight: 800;
+  height: 100%;
+  justify-content: center;
+  text-transform: uppercase;
+  width: 100%;
+}
+
 canvas {
   background: #10151b;
   cursor: grab;
@@ -694,6 +729,36 @@ canvas:active {
   position: absolute;
   right: 0;
   z-index: 1;
+}
+
+.map-legend {
+  align-items: center;
+  backdrop-filter: blur(12px);
+  background: rgba(12, 16, 20, .78);
+  border: 1px solid rgba(244, 246, 244, .14);
+  border-radius: 8px;
+  bottom: 24px;
+  color: rgba(244, 246, 244, .84);
+  display: grid;
+  font-size: 12px;
+  gap: 7px;
+  grid-template-columns: auto minmax(110px, 150px) auto;
+  left: 16px;
+  padding: 8px 10px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.map-legend i {
+  background: linear-gradient(90deg, #132124, #2d6f73, #f1c453, #e26d35, #d7263d);
+  border-radius: 999px;
+  display: block;
+  height: 9px;
+}
+
+.map-legend strong {
+  font-size: 12px;
 }
 
 .hud {

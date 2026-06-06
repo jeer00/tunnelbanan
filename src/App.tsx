@@ -1,9 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { CanvasMap } from "./components/CanvasMap";
 import { colors, districtTypes, initialGameState, specialEvents, trainTypes } from "./data";
 import { assignedTrainsets, createInitialState, districtById, getMetrics, getObjectives, getUnlocks, requiredTrainsets, saveGame, segmentCost, withSnapshot } from "./gameLogic";
-import type { ConstructionMethod, TrainTypeId, Unlocks } from "./types";
+import type { ConstructionMethod, MapOverlay, TrainTypeId, Unlocks } from "./types";
 import logoUrl from "./logo-app.png";
+
+const ThreeMap = React.lazy(() =>
+  import("./components/ThreeMap").then((module) => ({ default: module.ThreeMap })),
+);
 
 const modeLabels = {
   station: "Extend",
@@ -15,6 +18,13 @@ const constructionLabels = {
   tunnel: "Deep tunnel",
   cutcover: "Cut and cover",
   surface: "Surface / bridge",
+};
+
+const mapOverlayLabels: Record<MapOverlay, string> = {
+  none: "Normal",
+  homes: "Homes",
+  jobs: "Jobs",
+  demand: "Demand",
 };
 
 const unlockLabels = {
@@ -29,6 +39,7 @@ const unlockLabels = {
 export default function App() {
   const [game, setGame] = useState(createInitialState);
   const [construction, setConstruction] = useState<ConstructionMethod>("tunnel");
+  const [mapOverlay, setMapOverlay] = useState<MapOverlay>("none");
   const [activeView, setActiveView] = useState("build");
   const metrics = useMemo(() => getMetrics(game), [game]);
   const unlocks = useMemo(() => getUnlocks(game, metrics), [game, metrics]);
@@ -621,6 +632,22 @@ export default function App() {
             <input type="range" min={unlocks.highFrequency ? "3" : "5"} max="14" value={activeLine.frequency} onChange={(event) => updateLine(game.activeLine, { frequency: Number(event.target.value) })} />
           </label>
 
+          <div className="overlay-control" aria-label="Map overlay">
+            <span>Map filter</span>
+            <div className="segmented overlay-segmented" role="group" aria-label="Map filter">
+              {(Object.keys(mapOverlayLabels) as MapOverlay[]).map((overlay) => (
+                <button
+                  className={mapOverlay === overlay ? "active" : ""}
+                  key={overlay}
+                  type="button"
+                  onClick={() => setMapOverlay(overlay)}
+                >
+                  {mapOverlayLabels[overlay]}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="action-panel">
             <div>
               <span>Active route</span>
@@ -819,7 +846,9 @@ export default function App() {
       </aside>
 
       <section className="map-area" aria-label="Stockholm game map">
-        <CanvasMap game={game} metrics={metrics} onDistrictClick={selectDistrict} />
+        <React.Suspense fallback={<div className="map-loading">Loading 3D map...</div>}>
+          <ThreeMap game={game} metrics={metrics} mapOverlay={mapOverlay} onDistrictClick={selectDistrict} />
+        </React.Suspense>
         <div className="hud top-hud">
           <div>
             <strong>{game.hint}</strong>

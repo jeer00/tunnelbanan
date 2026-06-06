@@ -3,6 +3,7 @@ export type TrainTypeId = "CX" | "C20" | "C30";
 export type BuildMode = "station" | "express" | "remove";
 export type ConstructionMethod = "tunnel" | "cutcover" | "surface";
 export type ViewId = "build" | "economy" | "events" | "politics" | "goals";
+export type MapOverlay = "none" | "homes" | "jobs" | "demand";
 
 export type Point = {
   x: number;
@@ -24,6 +25,20 @@ export type District = Point & GeoPoint & {
 export type DistrictTypeMeta = {
   label: string;
   fill: string;
+};
+
+export type AggregateDemandArea = {
+  id: string;
+  name: string;
+  bounds: {
+    south: number;
+    west: number;
+    north: number;
+    east: number;
+  };
+  residents: number;
+  employedResidents?: number;
+  jobs: number;
 };
 
 export type TrainType = {

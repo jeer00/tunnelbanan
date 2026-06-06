@@ -1,0 +1,595 @@
+{
+  "version": 1,
+  "projection": "local-web-mercator",
+  "worldScale": 0.25,
+  "center": {
+    "lat": 59.3305,
+    "lon": 18.075
+  },
+  "bbox": {
+    "south": 59.296,
+    "west": 17.99,
+    "north": 59.365,
+    "east": 18.16
+  },
+  "rows": 6,
+  "cols": 6,
+  "patches": [
+    {
+      "id": "r0c0",
+      "row": 0,
+      "col": 0,
+      "south": 59.296,
+      "west": 17.99,
+      "north": 59.3075,
+      "east": 18.0183333,
+      "center": {
+        "x": -1971.2831132954452,
+        "z": 1567.91588483355
+      },
+      "url": "patches/r0c0.json",
+      "buildings": 765,
+      "roads": 1257
+    },
+    {
+      "id": "r0c1",
+      "row": 0,
+      "col": 1,
+      "south": 59.296,
+      "west": 18.0183333,
+      "north": 59.3075,
+      "east": 18.0466667,
+      "center": {
+        "x": -1182.769589678559,
+        "z": 1567.91588483355
+      },
+      "url": "patches/r0c1.json",
+      "buildings": 407,
+      "roads": 1161
+    },
+    {
+      "id": "r0c2",
+      "row": 0,
+      "col": 2,
+      "south": 59.296,
+      "west": 18.0466667,
+      "north": 59.3075,
+      "east": 18.075,
+      "center": {
+        "x": -394.25606606161455,
+        "z": 1567.91588483355
+      },
+      "url": "patches/r0c2.json",
+      "buildings": 589,
+      "roads": 861
+    },
+    {
+      "id": "r0c3",
+      "row": 0,
+      "col": 3,
+      "south": 59.296,
+      "west": 18.075,
+      "north": 59.3075,
+      "east": 18.1033333,
+      "center": {
+        "x": 394.25606606167275,
+        "z": 1567.91588483355
+      },
+      "url": "patches/r0c3.json",
+      "buildings": 536,
+      "roads": 1297
+    },
+    {
+      "id": "r0c4",
+      "row": 0,
+      "col": 4,
+      "south": 59.296,
+      "west": 18.1033333,
+      "north": 59.3075,
+      "east": 18.1316667,
+      "center": {
+        "x": 1182.769589678559,
+        "z": 1567.91588483355
+      },
+      "url": "patches/r0c4.json",
+      "buildings": 376,
+      "roads": 1025
+    },
+    {
+      "id": "r0c5",
+      "row": 0,
+      "col": 5,
+      "south": 59.296,
+      "west": 18.1316667,
+      "north": 59.3075,
+      "east": 18.16,
+      "center": {
+        "x": 1971.2831132955034,
+        "z": 1567.91588483355
+      },
+      "url": "patches/r0c5.json",
+      "buildings": 467,
+      "roads": 594
+    },
+    {
+      "id": "r1c0",
+      "row": 1,
+      "col": 0,
+      "south": 59.3075,
+      "west": 17.99,
+      "north": 59.319,
+      "east": 18.0183333,
+      "center": {
+        "x": -1971.2831132954452,
+        "z": 940.9086273550056
+      },
+      "url": "patches/r1c0.json",
+      "buildings": 492,
+      "roads": 682
+    },
+    {
+      "id": "r1c1",
+      "row": 1,
+      "col": 1,
+      "south": 59.3075,
+      "west": 18.0183333,
+      "north": 59.319,
+      "east": 18.0466667,
+      "center": {
+        "x": -1182.769589678559,
+        "z": 940.9086273550056
+      },
+      "url": "patches/r1c1.json",
+      "buildings": 784,
+      "roads": 1388
+    },
+    {
+      "id": "r1c2",
+      "row": 1,
+      "col": 2,
+      "south": 59.3075,
+      "west": 18.0466667,
+      "north": 59.319,
+      "east": 18.075,
+      "center": {
+        "x": -394.25606606161455,
+        "z": 940.9086273550056
+      },
+      "url": "patches/r1c2.json",
+      "buildings": 984,
+      "roads": 1721
+    },
+    {
+      "id": "r1c3",
+      "row": 1,
+      "col": 3,
+      "south": 59.3075,
+      "west": 18.075,
+      "north": 59.319,
+      "east": 18.1033333,
+      "center": {
+        "x": 394.25606606167275,
+        "z": 940.9086273550056
+      },
+      "url": "patches/r1c3.json",
+      "buildings": 974,
+      "roads": 1999
+    },
+    {
+      "id": "r1c4",
+      "row": 1,
+      "col": 4,
+      "south": 59.3075,
+      "west": 18.1033333,
+      "north": 59.319,
+      "east": 18.1316667,
+      "center": {
+        "x": 1182.769589678559,
+        "z": 940.9086273550056
+      },
+      "url": "patches/r1c4.json",
+      "buildings": 268,
+      "roads": 743
+    },
+    {
+      "id": "r1c5",
+      "row": 1,
+      "col": 5,
+      "south": 59.3075,
+      "west": 18.1316667,
+      "north": 59.319,
+      "east": 18.16,
+      "center": {
+        "x": 1971.2831132955034,
+        "z": 940.9086273550056
+      },
+      "url": "patches/r1c5.json",
+      "buildings": 411,
+      "roads": 581
+    },
+    {
+      "id": "r2c0",
+      "row": 2,
+      "col": 0,
+      "south": 59.319,
+      "west": 17.99,
+      "north": 59.3305,
+      "east": 18.0183333,
+      "center": {
+        "x": -1971.2831132954452,
+        "z": 313.68926940485835
+      },
+      "url": "patches/r2c0.json",
+      "buildings": 381,
+      "roads": 656
+    },
+    {
+      "id": "r2c1",
+      "row": 2,
+      "col": 1,
+      "south": 59.319,
+      "west": 18.0183333,
+      "north": 59.3305,
+      "east": 18.0466667,
+      "center": {
+        "x": -1182.769589678559,
+        "z": 313.68926940485835
+      },
+      "url": "patches/r2c1.json",
+      "buildings": 509,
+      "roads": 800
+    },
+    {
+      "id": "r2c2",
+      "row": 2,
+      "col": 2,
+      "south": 59.319,
+      "west": 18.0466667,
+      "north": 59.3305,
+      "east": 18.075,
+      "center": {
+        "x": -394.25606606161455,
+        "z": 313.68926940485835
+      },
+      "url": "patches/r2c2.json",
+      "buildings": 794,
+      "roads": 1628
+    },
+    {
+      "id": "r2c3",
+      "row": 2,
+      "col": 3,
+      "south": 59.319,
+      "west": 18.075,
+      "north": 59.3305,
+      "east": 18.1033333,
+      "center": {
+        "x": 394.25606606167275,
+        "z": 313.68926940485835
+      },
+      "url": "patches/r2c3.json",
+      "buildings": 422,
+      "roads": 657
+    },
+    {
+      "id": "r2c4",
+      "row": 2,
+      "col": 4,
+      "south": 59.319,
+      "west": 18.1033333,
+      "north": 59.3305,
+      "east": 18.1316667,
+      "center": {
+        "x": 1182.769589678559,
+        "z": 313.68926940485835
+      },
+      "url": "patches/r2c4.json",
+      "buildings": 262,
+      "roads": 454
+    },
+    {
+      "id": "r2c5",
+      "row": 2,
+      "col": 5,
+      "south": 59.319,
+      "west": 18.1316667,
+      "north": 59.3305,
+      "east": 18.16,
+      "center": {
+        "x": 1971.2831132955034,
+        "z": 313.68926940485835
+      },
+      "url": "patches/r2c5.json",
+      "buildings": 120,
+      "roads": 161
+    },
+    {
+      "id": "r3c0",
+      "row": 3,
+      "col": 0,
+      "south": 59.3305,
+      "west": 17.99,
+      "north": 59.342,
+      "east": 18.0183333,
+      "center": {
+        "x": -1971.2831132954452,
+        "z": -313.74235784751363
+      },
+      "url": "patches/r3c0.json",
+      "buildings": 323,
+      "roads": 891
+    },
+    {
+      "id": "r3c1",
+      "row": 3,
+      "col": 1,
+      "south": 59.3305,
+      "west": 18.0183333,
+      "north": 59.342,
+      "east": 18.0466667,
+      "center": {
+        "x": -1182.769589678559,
+        "z": -313.74235784751363
+      },
+      "url": "patches/r3c1.json",
+      "buildings": 1012,
+      "roads": 1486
+    },
+    {
+      "id": "r3c2",
+      "row": 3,
+      "col": 2,
+      "south": 59.3305,
+      "west": 18.0466667,
+      "north": 59.342,
+      "east": 18.075,
+      "center": {
+        "x": -394.25606606161455,
+        "z": -313.74235784751363
+      },
+      "url": "patches/r3c2.json",
+      "buildings": 1198,
+      "roads": 2550
+    },
+    {
+      "id": "r3c3",
+      "row": 3,
+      "col": 3,
+      "south": 59.3305,
+      "west": 18.075,
+      "north": 59.342,
+      "east": 18.1033333,
+      "center": {
+        "x": 394.25606606167275,
+        "z": -313.74235784751363
+      },
+      "url": "patches/r3c3.json",
+      "buildings": 1223,
+      "roads": 2000
+    },
+    {
+      "id": "r3c4",
+      "row": 3,
+      "col": 4,
+      "south": 59.3305,
+      "west": 18.1033333,
+      "north": 59.342,
+      "east": 18.1316667,
+      "center": {
+        "x": 1182.769589678559,
+        "z": -313.74235784751363
+      },
+      "url": "patches/r3c4.json",
+      "buildings": 123,
+      "roads": 355
+    },
+    {
+      "id": "r3c5",
+      "row": 3,
+      "col": 5,
+      "south": 59.3305,
+      "west": 18.1316667,
+      "north": 59.342,
+      "east": 18.16,
+      "center": {
+        "x": 1971.2831132955034,
+        "z": -313.74235784751363
+      },
+      "url": "patches/r3c5.json",
+      "buildings": 39,
+      "roads": 85
+    },
+    {
+      "id": "r4c0",
+      "row": 4,
+      "col": 0,
+      "south": 59.342,
+      "west": 17.99,
+      "north": 59.3535,
+      "east": 18.0183333,
+      "center": {
+        "x": -1971.2831132954452,
+        "z": -941.3864234203938
+      },
+      "url": "patches/r4c0.json",
+      "buildings": 260,
+      "roads": 747
+    },
+    {
+      "id": "r4c1",
+      "row": 4,
+      "col": 1,
+      "south": 59.342,
+      "west": 18.0183333,
+      "north": 59.3535,
+      "east": 18.0466667,
+      "center": {
+        "x": -1182.769589678559,
+        "z": -941.3864234203938
+      },
+      "url": "patches/r4c1.json",
+      "buildings": 688,
+      "roads": 1620
+    },
+    {
+      "id": "r4c2",
+      "row": 4,
+      "col": 2,
+      "south": 59.342,
+      "west": 18.0466667,
+      "north": 59.3535,
+      "east": 18.075,
+      "center": {
+        "x": -394.25606606161455,
+        "z": -941.3864234203938
+      },
+      "url": "patches/r4c2.json",
+      "buildings": 913,
+      "roads": 1891
+    },
+    {
+      "id": "r4c3",
+      "row": 4,
+      "col": 3,
+      "south": 59.342,
+      "west": 18.075,
+      "north": 59.3535,
+      "east": 18.1033333,
+      "center": {
+        "x": 394.25606606167275,
+        "z": -941.3864234203938
+      },
+      "url": "patches/r4c3.json",
+      "buildings": 387,
+      "roads": 1326
+    },
+    {
+      "id": "r4c4",
+      "row": 4,
+      "col": 4,
+      "south": 59.342,
+      "west": 18.1033333,
+      "north": 59.3535,
+      "east": 18.1316667,
+      "center": {
+        "x": 1182.769589678559,
+        "z": -941.3864234203938
+      },
+      "url": "patches/r4c4.json",
+      "buildings": 139,
+      "roads": 590
+    },
+    {
+      "id": "r4c5",
+      "row": 4,
+      "col": 5,
+      "south": 59.342,
+      "west": 18.1316667,
+      "north": 59.3535,
+      "east": 18.16,
+      "center": {
+        "x": 1971.2831132955034,
+        "z": -941.3864234203938
+      },
+      "url": "patches/r4c5.json",
+      "buildings": 231,
+      "roads": 570
+    },
+    {
+      "id": "r5c0",
+      "row": 5,
+      "col": 0,
+      "south": 59.3535,
+      "west": 17.99,
+      "north": 59.365,
+      "east": 18.0183333,
+      "center": {
+        "x": -1971.2831132954452,
+        "z": -1569.2430965204258
+      },
+      "url": "patches/r5c0.json",
+      "buildings": 502,
+      "roads": 1557
+    },
+    {
+      "id": "r5c1",
+      "row": 5,
+      "col": 1,
+      "south": 59.3535,
+      "west": 18.0183333,
+      "north": 59.365,
+      "east": 18.0466667,
+      "center": {
+        "x": -1182.769589678559,
+        "z": -1569.2430965204258
+      },
+      "url": "patches/r5c1.json",
+      "buildings": 92,
+      "roads": 580
+    },
+    {
+      "id": "r5c2",
+      "row": 5,
+      "col": 2,
+      "south": 59.3535,
+      "west": 18.0466667,
+      "north": 59.365,
+      "east": 18.075,
+      "center": {
+        "x": -394.25606606161455,
+        "z": -1569.2430965204258
+      },
+      "url": "patches/r5c2.json",
+      "buildings": 99,
+      "roads": 437
+    },
+    {
+      "id": "r5c3",
+      "row": 5,
+      "col": 3,
+      "south": 59.3535,
+      "west": 18.075,
+      "north": 59.365,
+      "east": 18.1033333,
+      "center": {
+        "x": 394.25606606167275,
+        "z": -1569.2430965204258
+      },
+      "url": "patches/r5c3.json",
+      "buildings": 241,
+      "roads": 741
+    },
+    {
+      "id": "r5c4",
+      "row": 5,
+      "col": 4,
+      "south": 59.3535,
+      "west": 18.1033333,
+      "north": 59.365,
+      "east": 18.1316667,
+      "center": {
+        "x": 1182.769589678559,
+        "z": -1569.2430965204258
+      },
+      "url": "patches/r5c4.json",
+      "buildings": 356,
+      "roads": 431
+    },
+    {
+      "id": "r5c5",
+      "row": 5,
+      "col": 5,
+      "south": 59.3535,
+      "west": 18.1316667,
+      "north": 59.365,
+      "east": 18.16,
+      "center": {
+        "x": 1971.2831132955034,
+        "z": -1569.2430965204258
+      },
+      "url": "patches/r5c5.json",
+      "buildings": 1037,
+      "roads": 494
+    }
+  ]
+}
