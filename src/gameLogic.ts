@@ -780,21 +780,12 @@ export function restartGame(): GameState {
   return structuredClone(initialGameState);
 }
 
-const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-export function formatMonth(month: number) {
-  const monthsSinceStart = Math.max(0, month - 1);
-  const year = 2026 + Math.floor(monthsSinceStart / 12);
-  const monthIndex = monthsSinceStart % 12;
-  return `1 ${MONTH_NAMES[monthIndex]} ${year}`;
-}
-
 function triggerGameOver(state: GameState, budget: number): GameState {
   const gameOver: GameOver = {
     reason: "bankruptcy",
     month: state.month,
     budget,
-    message: `Bankrupt on ${formatMonth(state.month)} — budget dropped to ${budget} mkr.`,
+    message: `Bankrupt in month ${state.month} — budget dropped to ${budget} mkr.`,
   };
   return { ...state, gameOver, hint: gameOver.message };
 }
@@ -802,7 +793,7 @@ function triggerGameOver(state: GameState, budget: number): GameState {
 function formatMonthHint(entry: EconomyEntry, metrics: Metrics, reward: number, completedTitle: string | null) {
   const net = entry.netIncome >= 0 ? `+${entry.netIncome}` : `${entry.netIncome}`;
   const rewardPart = reward > 0 ? ` · Goal reward +${reward} mkr${completedTitle ? ` (${completedTitle})` : ""}` : "";
-  return `${formatMonth(entry.day / daysPerMonth())}: revenue ${entry.revenue} mkr, ops ${entry.operatingCost} mkr, net ${net} mkr. ${metrics.riders.toLocaleString("en-US")} riders, ${metrics.flowCoverage}% flow${rewardPart}`;
+  return `Month ${entry.day / daysPerMonth()}: revenue ${entry.revenue} mkr, ops ${entry.operatingCost} mkr, net ${net} mkr. ${metrics.riders.toLocaleString("en-US")} riders, ${metrics.flowCoverage}% flow${rewardPart}`;
 }
 
 export function lineLengthKm(line: Line, stations: Station[]) {

@@ -32,7 +32,6 @@ import {
   trackNodeCost,
   UNLOCK_DEFINITIONS,
   withSnapshot,
-  formatMonth,
 } from "./gameLogic";
 import type { BuildMode, GameState, GeoPoint, GoalKind, Line, MapOverlay, PanelId, SnapHint, Station, TrackTool } from "./types";
 import logoUrl from "./logo-app.png";
@@ -140,7 +139,7 @@ export default function App() {
         const remaining = Math.max(0, (1 - accumulatorRef.current) * interval) / 1000;
         const wholeMonth = monthRef.current;
         const day = Math.floor(accumulatorRef.current * daysPerMonth()) + 1;
-        tickLabelRef.current.textContent = `Day ${day}/${daysPerMonth()} · ${formatMonth(wholeMonth)} · next in ${remaining.toFixed(1)}s`;
+        tickLabelRef.current.textContent = `Day ${day}/${daysPerMonth()} · M${wholeMonth} · next in ${remaining.toFixed(1)}s`;
       }
 
       // Throttled live display update (every ~80ms) so budget ticks smoothly
@@ -640,7 +639,7 @@ export default function App() {
     if (tickBarRef.current) tickBarRef.current.style.transform = "scaleX(0)";
     if (tickLabelRef.current) {
       const monthLen = monthLengthMs() / 1000;
-      tickLabelRef.current.textContent = `Day 1/${daysPerMonth()} · ${formatMonth(fresh.month)} · next in ${monthLen.toFixed(1)}s`;
+      tickLabelRef.current.textContent = `Day 1/${daysPerMonth()} · M${fresh.month} · next in ${monthLen.toFixed(1)}s`;
     }
   }
 
@@ -686,7 +685,7 @@ export default function App() {
           </div>
         </div>
         <div className="topbar-metrics">
-          <Metric label="Day" value={`${Math.floor(liveFraction * daysPerMonth()) + 1}/${daysPerMonth()} · ${formatMonth(game.month)}`} />
+          <Metric label="Day" value={`${Math.floor(liveFraction * daysPerMonth()) + 1}/${daysPerMonth()} · M${game.month}`} />
           <Metric label="Budget" value={`${liveBudget} mkr`} />
           <Metric label="Riders" value={metrics.riders.toLocaleString("en-US")} />
           <Metric label="Net" value={`${metrics.netIncome} mkr`} />
@@ -904,7 +903,7 @@ export default function App() {
 
           {activePanel === "economy" && (
             <>
-              <PanelHead title="Economy" detail={`Day ${Math.floor(liveFraction * daysPerMonth()) + 1}/${daysPerMonth()} · ${formatMonth(game.month)} · ${gameSpeed}×`} />
+              <PanelHead title="Economy" detail={`Day ${Math.floor(liveFraction * daysPerMonth()) + 1}/${daysPerMonth()} · M${game.month} · ${gameSpeed}×`} />
               <MiniChart data={game.economyHistory} />
               <div className="finance-grid">
                 <div><span>Revenue</span><strong>{metrics.monthlyRevenue} mkr</strong></div>
@@ -1173,7 +1172,7 @@ export default function App() {
           <summary>News history ({game.newsTicker.length})</summary>
           <ul>
             {[...game.newsTicker].reverse().slice(0, 12).map((entry) => (
-              <li key={entry.id}>{formatMonth(entry.month)} · {entry.message}</li>
+              <li key={entry.id}>M{entry.month} · {entry.message}</li>
             ))}
           </ul>
         </details>
@@ -1185,7 +1184,7 @@ export default function App() {
             <p className="kicker">Game over</p>
             <h2 id="gameover-title">Bankrupt</h2>
             <div className="finance-grid">
-              <div><span>Day</span><strong>{`${daysPerMonth()}/${daysPerMonth()} · ${formatMonth(game.gameOver.month)}`}</strong></div>
+              <div><span>Day</span><strong>{`${daysPerMonth()}/${daysPerMonth()} · M${game.gameOver.month}`}</strong></div>
               <div><span>Budget</span><strong>{Math.round(game.gameOver.budget)} mkr</strong></div>
               <div><span>Riders</span><strong>{metrics.riders.toLocaleString("en-US")}</strong></div>
               <div><span>Score</span><strong>{metrics.score.toLocaleString("en-US")}</strong></div>
