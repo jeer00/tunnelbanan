@@ -1,30 +1,85 @@
-export type DistrictType = "homes" | "jobs" | "culture" | "interchange";
-export type TrainTypeId = "CX" | "C20" | "C30";
-export type BuildMode = "station" | "express" | "remove";
-export type ConstructionMethod = "tunnel" | "cutcover" | "surface";
-export type ViewId = "build" | "economy" | "events" | "politics" | "goals";
-export type MapOverlay = "none" | "homes" | "jobs" | "demand";
+export type GeoPoint = {
+  lat: number;
+  lon: number;
+};
 
 export type Point = {
   x: number;
   y: number;
 };
 
-export type GeoPoint = {
-  lat: number;
-  lon: number;
+export type MapOverlay = "none" | "homes" | "jobs" | "demand" | "flows" | "unmet";
+export type BuildMode = "track" | "station" | "select";
+export type PanelId = "build" | "economy" | "network" | "data" | "goals" | "service";
+export type TrackTool = "straight" | "softCurve" | "broadCurve";
+export type ServiceQuality = "basic" | "comfortable" | "premium";
+
+export type ServiceSettings = {
+  ticketPrice: number; // mkr per trip
+  trainFrequency: number; // trains per hour (1-20)
+  serviceQuality: ServiceQuality;
 };
 
-export type District = Point & GeoPoint & {
+export type UnlockId =
+  | "tunnels"
+  | "express"
+  | "transfers"
+  | "metro"
+  | "doubleTrack"
+  | "automation"
+  | "signaling"
+  | "prestige";
+
+export type UnlockState = Record<UnlockId, boolean>;
+
+export type UnlockNotification = {
+  id: UnlockId;
+  title: string;
+  description: string;
+  month: number;
+};
+
+export type GameEventType = "demand-spike" | "season" | "development" | "incident";
+
+export type GameEvent = {
+  id: string;
+  type: GameEventType;
+  title: string;
+  message: string;
+  duration: number; // days remaining
+  ridershipMultiplier: number; // 1.0 = no change, 1.5 = +50% ridership
+  revenueMultiplier: number; // 1.0 = no change
+  costMultiplier: number; // 1.0 = no change
+  newHomes: number; // homes added (development events)
+  newJobs: number; // jobs added
+};
+
+export type SnapHint = {
+  kind: "station" | "line-endpoint" | "line-segment";
+  point: GeoPoint;
+  ref: string; // station id or line id
+};
+
+export type SelectedTrackNode = {
+  lineId: string;
+  index: number;
+} | null;
+
+
+export type Station = GeoPoint & {
   id: string;
   name: string;
-  demand: number;
-  type: DistrictType;
 };
 
-export type DistrictTypeMeta = {
-  label: string;
-  fill: string;
+export type Line = {
+  id: string;
+  name: string;
+  color: string;
+  trackTool: TrackTool;
+  segmentTools: TrackTool[];
+  path: GeoPoint[];
+  stationIds: string[];
+  frequency: number;
 };
 
 export type AggregateDemandArea = {
@@ -41,137 +96,84 @@ export type AggregateDemandArea = {
   jobs: number;
 };
 
-export type TrainType = {
-  label: string;
-  price: number;
-  capacity: number;
-  maintenance: number;
-  energy: number;
-  support: number;
-  reliability: number;
-  description: string;
-};
-
-export type SpecialEvent = {
-  id: string;
-  name: string;
-  stationId: string;
-  destinationId: string;
-  demand: number;
-  hours: number;
-  supportImpact: number;
-};
-
-export type ActiveEvent = SpecialEvent & {
-  month: number;
-};
-
-export type EventService = {
-  lineIndex: number;
-  type: TrainTypeId;
-  count: number;
-  fromId: string;
-  toId: string;
-};
-
-export type Fleet = Record<TrainTypeId, number>;
-export type Segment = [string, string];
-
-export type Line = {
-  name: string;
-  color: string;
-  stations: string[];
-  segments: Segment[];
-  anchor?: string;
-  frequency: number;
-  express: string[];
-  fleet?: Fleet;
-};
-
 export type EconomyEntry = {
   month: number;
+  day: number;
   budget: number;
   revenue: number;
   operatingCost: number;
   netIncome: number;
-  support: number;
   riders: number;
-  unconstrainedRiders?: number;
-  capacity?: number;
-  utilization?: number;
-  ticketPrice: number;
-  trainsets: number;
-  eventCapacity: number;
+  coverage: number;
+  constructionCost: number;
+  satisfaction: number;
 };
 
-export type Unlocks = {
-  c20: boolean;
-  c30: boolean;
-  express: boolean;
-  surface: boolean;
-  grants: boolean;
-  highFrequency: boolean;
+export type GoalStatus = "locked" | "active" | "complete";
+
+export type GoalProgress = {
+  id: string;
+  status: GoalStatus;
+  current: number;
+  target: number;
+  progressLabel: string;
+  completedAt: number | null;
+};
+
+export type GoalKind = "firstLine" | "coverage30" | "threeLines" | "profitMonth" | "coverage70";
+
+export type GameOver = {
+  reason: "bankruptcy";
+  month: number;
+  budget: number;
+  message: string;
 };
 
 export type GameState = {
   gameVersion: number;
   budget: number;
-  paused: boolean;
-  activeLine: number;
+  month: number;
+  activeLineId: string | null;
+  selectedStationId: string | null;
+  selectedTrackNode: SelectedTrackNode;
   mode: BuildMode;
-  selected: string | null;
   hint: string;
   history: string[];
-  actionCount: number;
-  month: number;
-  politicalCapital: number;
-  councilSupport: number;
-  ticketPrice: number;
-  fundingRequests: number;
-  activeEvent: ActiveEvent | null;
-  eventServices: EventService[];
-  nextEventMonth: number;
-  nextHearingMonth: number;
-  nextFundingMonth: number;
-  hearingFatigue: number;
-  economyHistory: EconomyEntry[];
-  unlocked: Unlocks;
+  stations: Station[];
   lines: Line[];
+  economyHistory: EconomyEntry[];
+  tickPaused: boolean;
+  lastTickAt: number;
+  goals: GoalProgress[];
+  gameOver: GameOver | null;
+  bannerMessage: string | null;
+  serviceSettings: ServiceSettings;
+  unlocks: UnlockState;
+  unlockNotifications: UnlockNotification[];
+  events: GameEvent[];
+  satisfaction: number;
+  newsTicker: { id: string; message: string; month: number }[];
 };
 
 export type Metrics = {
-  served: Set<string>;
   riders: number;
-  unconstrainedRiders: number;
   marketDemand: number;
   unmetDemand: number;
-  utilization: number;
   coverage: number;
-  mood: number;
-  score: number;
+  routeLengthKm: number;
   monthlyRevenue: number;
   operatingCost: number;
-  infrastructureCost: number;
-  fleetMaintenance: number;
-  overhead: number;
-  debtService: number;
   netIncome: number;
-  councilSupport: number;
-  level: number;
-  routeLength: number;
-  ticketPrice: number;
-  affordability: number;
-  trainsets: number;
-  requiredTrainsets: number;
-  dailyCapacity: number;
-  maintenanceCost: number;
-  serviceReliability: number;
-  fleetSupport: number;
-  support: number;
-  eventCapacity: number;
-};
-
-export type Objective = {
-  label: string;
-  done: boolean;
+  stationCount: number;
+  lineCount: number;
+  interchangeCount: number;
+  score: number;
+  servedTrips: number;
+  totalTrips: number;
+  totalHomes: number;
+  totalJobs: number;
+  flowCoverage: number;
+  satisfaction: number;
+  capacity: number;
+  loadFactor: number;
 };

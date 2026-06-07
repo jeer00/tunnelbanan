@@ -62,6 +62,11 @@ export class MapPatchStore {
     return Promise.all(wanted.map((patch) => this.loadPatch(patch)));
   }
 
+  async loadAll() {
+    const manifest = await this.loadManifest();
+    return Promise.all(manifest.patches.map((patch) => this.loadPatch(patch)));
+  }
+
   getCachedPatches() {
     return [...this.patchesById.values()];
   }

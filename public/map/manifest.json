@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "projection": "local-web-mercator",
   "worldScale": 0.25,
   "center": {
@@ -591,5 +591,10 @@
       "buildings": 1037,
       "roads": 494
     }
-  ]
+  ],
+  "elevation": {
+    "zoom": 13,
+    "grid": 17,
+    "source": "terrarium"
+  }
 }

@@ -46,7 +46,13 @@ export type RoadFeature = {
   p: number[];
 };
 
+export type PatchElevation = {
+  n: number;
+  values: number[];
+};
+
 export type MapPatchData = {
   buildings: BuildingFeature[];
   roads: RoadFeature[];
+  elevation: PatchElevation;
 };

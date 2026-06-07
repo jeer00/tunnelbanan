@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PNG } from "pngjs";
 
 const SOURCE_ROOT = new URL("../../3dmap/data/", import.meta.url);
 const SOURCE_MANIFEST = new URL("stockholm-patches.json", SOURCE_ROOT);
@@ -24,6 +25,15 @@ const ROAD_TYPES = new Set([
   "path",
 ]);
 
+const ELEVATION_TILE_URL = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium";
+const ELEVATION_ZOOM = 13;
+const ELEVATION_GRID = 17;
+const ELEVATION_MIN = -8;
+const ELEVATION_MAX = 120;
+const ELEVATION_SMOOTH_PASSES = 2;
+
+const tileImageCache = new Map();
+
 const sourceManifest = JSON.parse(await readFile(SOURCE_MANIFEST, "utf8"));
 const center = {
   lat: (sourceManifest.bbox.south + sourceManifest.bbox.north) / 2,
@@ -34,7 +44,7 @@ const origin = lonLatToMercator(center.lon, center.lat);
 await mkdir(OUT_PATCH_DIR, { recursive: true });
 
 const manifest = {
-  version: 1,
+  version: 2,
   projection: "local-web-mercator",
   worldScale: WORLD_SCALE,
   center,
@@ -42,12 +52,14 @@ const manifest = {
   rows: sourceManifest.rows,
   cols: sourceManifest.cols,
   patches: [],
+  elevation: { zoom: ELEVATION_ZOOM, grid: ELEVATION_GRID, source: "terrarium" },
 };
 
 for (const patch of sourceManifest.patches) {
   const sourcePath = new URL(path.basename(patch.url), new URL("osm-patches/", SOURCE_ROOT));
   const xml = await readFile(sourcePath, "utf8");
   const data = parsePatch(xml);
+  data.elevation = await samplePatchElevation(patch);
   const url = `patches/${patch.id}.json`;
   const outPath = new URL(url, OUT_ROOT);
 
@@ -244,4 +256,125 @@ function formatBytes(bytes) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
+async function loadTerrariumTile(z, x, y) {
+  const key = `${z}/${x}/${y}`;
+  if (tileImageCache.has(key)) return tileImageCache.get(key);
+
+  const url = `${ELEVATION_TILE_URL}/${z}/${x}/${y}.png`;
+  const promise = (async () => {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Terrarium tile ${key} ${response.status}`);
+    const buffer = Buffer.from(await response.arrayBuffer());
+    return new Promise((resolve, reject) => {
+      new PNG().parse(buffer, (error, png) => {
+        if (error) reject(error);
+        else resolve({ width: png.width, height: png.height, data: png.data });
+      });
+    });
+  })();
+  tileImageCache.set(key, promise);
+  return promise;
+}
+
+function sampleTerrariumElevation(lat, lon) {
+  const tile = lonLatToTile(lon, lat, ELEVATION_ZOOM);
+  const tileX = Math.floor(tile.x);
+  const tileY = Math.floor(tile.y);
+  const key = `${ELEVATION_ZOOM}/${tileX}/${tileY}`;
+  const promise = tileImageCache.get(key);
+  if (!promise) {
+    throw new Error(`Missing elevation tile ${key}; call loadTerrariumTile first`);
+  }
+  return promise.then((png) => {
+    const px = Math.min(255, Math.max(0, Math.floor((tile.x - tileX) * 256)));
+    const py = Math.min(255, Math.max(0, Math.floor((tile.y - tileY) * 256)));
+    const index = (py * png.width + px) * 4;
+    const r = png.data[index];
+    const g = png.data[index + 1];
+    const b = png.data[index + 2];
+    return r * 256 + g + b / 256 - 32768;
+  });
+}
+
+function lonLatToTile(lon, lat, zoom) {
+  const latRad = degToRad(lat);
+  const tiles = 2 ** zoom;
+  return {
+    x: ((lon + 180) / 360) * tiles,
+    y: ((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * tiles,
+  };
+}
+
+function gatherTileKeys(patch) {
+  const corners = [
+    lonLatToTile(patch.west, patch.south, ELEVATION_ZOOM),
+    lonLatToTile(patch.east, patch.south, ELEVATION_ZOOM),
+    lonLatToTile(patch.west, patch.north, ELEVATION_ZOOM),
+    lonLatToTile(patch.east, patch.north, ELEVATION_ZOOM),
+  ];
+  const minX = Math.floor(Math.min(...corners.map((c) => c.x)));
+  const maxX = Math.floor(Math.max(...corners.map((c) => c.x)));
+  const minY = Math.floor(Math.min(...corners.map((c) => c.y)));
+  const maxY = Math.floor(Math.max(...corners.map((c) => c.y)));
+  const keys = [];
+  for (let x = minX; x <= maxX; x += 1) {
+    for (let y = minY; y <= maxY; y += 1) {
+      keys.push(`${ELEVATION_ZOOM}/${x}/${y}`);
+    }
+  }
+  return keys;
+}
+
+async function samplePatchElevation(patch) {
+  const keys = gatherTileKeys(patch);
+  await Promise.all(keys.map((key) => loadTerrariumTile(...key.split("/").map(Number))));
+
+  const samples = [];
+  for (let row = 0; row < ELEVATION_GRID; row += 1) {
+    const lat = lerp(patch.south, patch.north, row / (ELEVATION_GRID - 1));
+    for (let col = 0; col < ELEVATION_GRID; col += 1) {
+      const lon = lerp(patch.west, patch.east, col / (ELEVATION_GRID - 1));
+      const raw = await sampleTerrariumElevation(lat, lon);
+      samples.push(round(clamp(sanitize(raw), ELEVATION_MIN, ELEVATION_MAX), 2));
+    }
+  }
+
+  const smoothed = smoothElevationGrid(samples, ELEVATION_GRID);
+  return { n: ELEVATION_GRID, values: smoothed };
+}
+
+function smoothElevationGrid(values, n) {
+  let current = values;
+  for (let pass = 0; pass < ELEVATION_SMOOTH_PASSES; pass += 1) {
+    const next = current.slice();
+    for (let row = 0; row < n; row += 1) {
+      for (let col = 0; col < n; col += 1) {
+        let total = 0;
+        let count = 0;
+        for (let dr = -1; dr <= 1; dr += 1) {
+          for (let dc = -1; dc <= 1; dc += 1) {
+            const r = row + dr;
+            const c = col + dc;
+            if (r < 0 || r >= n || c < 0 || c >= n) continue;
+            total += current[r * n + c];
+            count += 1;
+          }
+        }
+        next[row * n + col] = round(total / count, 2);
+      }
+    }
+    current = next;
+  }
+  return current;
+}
+
+function sanitize(value) {
+  if (!Number.isFinite(value)) return 0;
+  return value;
+}
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
 }
