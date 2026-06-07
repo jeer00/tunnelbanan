@@ -38,6 +38,8 @@ export type MapManifest = {
 
 export type BuildingFeature = {
   h: number;
+  t?: string; // r=residential, c=commercial, i=industrial, u=public/landmark, d=default
+  s?: number; // 0-255 per-building shade variation
   p: number[];
 };
 

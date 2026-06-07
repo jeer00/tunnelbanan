@@ -6,23 +6,28 @@ const OUT_FILE = new URL("../src/demandData.ts", import.meta.url);
 
 const mapBbox = {
   south: 59.22,
-  west: 17.80,
+  west: 17.85,
   north: 59.43,
-  east: 18.18,
+  east: 18.20,
 };
 
 const displayAreas = [
-  { id: "inner-city", name: "Inner city", bounds: { south: 59.318, west: 18.028, north: 59.351, east: 18.101 }, jobWeight: 356000 },
-  { id: "sodermalm", name: "Sodermalm", bounds: { south: 59.300, west: 18.010, north: 59.325, east: 18.100 }, jobWeight: 91000 },
-  { id: "kungsholmen", name: "Kungsholmen", bounds: { south: 59.321, west: 18.000, north: 59.343, east: 18.055 }, jobWeight: 82000 },
-  { id: "vasastan", name: "Vasastan", bounds: { south: 59.335, west: 18.025, north: 59.360, east: 18.075 }, jobWeight: 118000 },
-  { id: "ostermalm-gardet", name: "Ostermalm and Gardet", bounds: { south: 59.332, west: 18.070, north: 59.365, east: 18.135 }, jobWeight: 139000 },
-  { id: "solna-sundbyberg", name: "Solna and Sundbyberg", bounds: { south: 59.345, west: 17.950, north: 59.385, east: 18.030 }, jobWeight: 129000 },
-  { id: "hagersten-liljeholmen", name: "Hagersten and Liljeholmen", bounds: { south: 59.285, west: 17.955, north: 59.318, east: 18.030 }, jobWeight: 61000 },
-  { id: "soderort-west", name: "Western Soderort", bounds: { south: 59.245, west: 17.885, north: 59.305, east: 17.985 }, jobWeight: 48000 },
-  { id: "soderort-east", name: "Eastern Soderort", bounds: { south: 59.240, west: 18.035, north: 59.305, east: 18.145 }, jobWeight: 52000 },
-  { id: "kista-jarva", name: "Kista and Jarva", bounds: { south: 59.385, west: 17.885, north: 59.420, east: 17.965 }, jobWeight: 87000 },
-  { id: "bromma-vasterort", name: "Bromma and Vasterort", bounds: { south: 59.330, west: 17.825, north: 59.375, east: 17.970 }, jobWeight: 51000 },
+  { id: "inner-city", name: "Inner city", bounds: { south: 59.315, west: 18.025, north: 59.355, east: 18.110 }, jobWeight: 234000 },
+  { id: "sodermalm", name: "Sodermalm", bounds: { south: 59.295, west: 18.005, north: 59.330, east: 18.110 }, jobWeight: 60000 },
+  { id: "kungsholmen", name: "Kungsholmen", bounds: { south: 59.318, west: 17.995, north: 59.348, east: 18.060 }, jobWeight: 54000 },
+  { id: "vasastan", name: "Vasastan", bounds: { south: 59.330, west: 18.020, north: 59.365, east: 18.080 }, jobWeight: 78000 },
+  { id: "ostermalm-gardet", name: "Ostermalm and Gardet", bounds: { south: 59.330, west: 18.065, north: 59.370, east: 18.145 }, jobWeight: 91000 },
+  { id: "solna-sundbyberg", name: "Solna and Sundbyberg", bounds: { south: 59.340, west: 17.940, north: 59.390, east: 18.040 }, jobWeight: 133000 },
+  { id: "hagersten-liljeholmen", name: "Hagersten and Liljeholmen", bounds: { south: 59.280, west: 17.950, north: 59.325, east: 18.040 }, jobWeight: 40000 },
+  { id: "soderort-west", name: "Western Soderort", bounds: { south: 59.255, west: 17.940, north: 59.310, east: 17.990 }, jobWeight: 32000 },
+  { id: "soderort-east", name: "Eastern Soderort", bounds: { south: 59.255, west: 18.030, north: 59.310, east: 18.155 }, jobWeight: 34000 },
+  { id: "kista-jarva", name: "Kista and Jarva", bounds: { south: 59.375, west: 17.910, north: 59.420, east: 17.980 }, jobWeight: 57000 },
+  { id: "bromma-vasterort", name: "Bromma and Vasterort", bounds: { south: 59.325, west: 17.940, north: 59.380, east: 17.980 }, jobWeight: 34000 },
+  { id: "lidingo", name: "Lidingo", bounds: { south: 59.345, west: 18.100, north: 59.420, east: 18.200 }, jobWeight: 18000 },
+  { id: "nacka", name: "Nacka", bounds: { south: 59.260, west: 18.080, north: 59.350, east: 18.200 }, jobWeight: 38000 },
+  { id: "farsta-skarpnack", name: "Farsta and Skarpnack", bounds: { south: 59.255, west: 18.040, north: 59.300, east: 18.150 }, jobWeight: 22000 },
+  { id: "akalla-tensta", name: "Akalla and Tensta", bounds: { south: 59.380, west: 17.900, north: 59.420, east: 17.955 }, jobWeight: 14000 },
+  { id: "bromma-south", name: "Southern Bromma", bounds: { south: 59.300, west: 17.920, north: 59.340, east: 17.980 }, jobWeight: 26000 },
 ];
 
 const stockholmCityAreaIds = new Set([
@@ -36,10 +41,15 @@ const stockholmCityAreaIds = new Set([
   "soderort-east",
   "kista-jarva",
   "bromma-vasterort",
+  "farsta-skarpnack",
+  "akalla-tensta",
+  "bromma-south",
 ]);
 
 const areaMunicipality = {
   "solna-sundbyberg": ["0183", "0184"],
+  "lidingo": ["0186"],
+  "nacka": ["0182"],
 };
 
 const stockholmCityCode = "0180";

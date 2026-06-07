@@ -9,143 +9,208 @@ export const aggregateDemandAreas: AggregateDemandArea[] = [
     "id": "inner-city",
     "name": "Inner city",
     "bounds": {
-      "south": 59.318,
-      "west": 18.028,
-      "north": 59.351,
-      "east": 18.101
+      "south": 59.315,
+      "west": 18.025,
+      "north": 59.355,
+      "east": 18.11
     },
-    "residents": 3561,
-    "employedResidents": 1938,
-    "jobs": 234033
+    "residents": 37880,
+    "employedResidents": 22115,
+    "jobs": 215086
   },
   {
     "id": "sodermalm",
     "name": "Sodermalm",
     "bounds": {
-      "south": 59.3,
-      "west": 18.01,
-      "north": 59.325,
-      "east": 18.1
+      "south": 59.295,
+      "west": 18.005,
+      "north": 59.33,
+      "east": 18.11
     },
-    "residents": 143742,
-    "employedResidents": 82776,
-    "jobs": 59823
+    "residents": 139991,
+    "employedResidents": 81392,
+    "jobs": 55150
   },
   {
     "id": "kungsholmen",
     "name": "Kungsholmen",
     "bounds": {
-      "south": 59.321,
-      "west": 18,
-      "north": 59.343,
-      "east": 18.055
+      "south": 59.318,
+      "west": 17.995,
+      "north": 59.348,
+      "east": 18.06
     },
-    "residents": 89147,
-    "employedResidents": 53640,
-    "jobs": 53906
+    "residents": 132423,
+    "employedResidents": 78847,
+    "jobs": 49635
   },
   {
     "id": "vasastan",
     "name": "Vasastan",
     "bounds": {
-      "south": 59.335,
-      "west": 18.025,
-      "north": 59.36,
-      "east": 18.075
+      "south": 59.33,
+      "west": 18.02,
+      "north": 59.365,
+      "east": 18.08
     },
-    "residents": 63367,
-    "employedResidents": 36240,
-    "jobs": 77573
+    "residents": 46197,
+    "employedResidents": 24627,
+    "jobs": 71695
   },
   {
     "id": "ostermalm-gardet",
     "name": "Ostermalm and Gardet",
     "bounds": {
-      "south": 59.332,
-      "west": 18.07,
-      "north": 59.365,
-      "east": 18.135
+      "south": 59.33,
+      "west": 18.065,
+      "north": 59.37,
+      "east": 18.145
     },
-    "residents": 69858,
-    "employedResidents": 35776,
-    "jobs": 91378
+    "residents": 68491,
+    "employedResidents": 35460,
+    "jobs": 83644
   },
   {
     "id": "solna-sundbyberg",
     "name": "Solna and Sundbyberg",
     "bounds": {
-      "south": 59.345,
-      "west": 17.95,
-      "north": 59.385,
-      "east": 18.03
+      "south": 59.34,
+      "west": 17.94,
+      "north": 59.39,
+      "east": 18.04
     },
-    "residents": 125269,
-    "employedResidents": 72087,
+    "residents": 80194,
+    "employedResidents": 45140,
     "jobs": 132510
   },
   {
     "id": "hagersten-liljeholmen",
     "name": "Hagersten and Liljeholmen",
     "bounds": {
-      "south": 59.285,
-      "west": 17.955,
-      "north": 59.318,
-      "east": 18.03
+      "south": 59.28,
+      "west": 17.95,
+      "north": 59.325,
+      "east": 18.04
     },
-    "residents": 72100,
-    "employedResidents": 41813,
-    "jobs": 40101
+    "residents": 46312,
+    "employedResidents": 26545,
+    "jobs": 36767
   },
   {
     "id": "soderort-west",
     "name": "Western Soderort",
     "bounds": {
-      "south": 59.245,
-      "west": 17.885,
-      "north": 59.305,
-      "east": 17.985
+      "south": 59.255,
+      "west": 17.94,
+      "north": 59.31,
+      "east": 17.99
     },
-    "residents": 80219,
-    "employedResidents": 39437,
-    "jobs": 31555
+    "residents": 55497,
+    "employedResidents": 30014,
+    "jobs": 29413
   },
   {
     "id": "soderort-east",
     "name": "Eastern Soderort",
     "bounds": {
-      "south": 59.24,
-      "west": 18.035,
-      "north": 59.305,
-      "east": 18.145
+      "south": 59.255,
+      "west": 18.03,
+      "north": 59.31,
+      "east": 18.155
     },
-    "residents": 179877,
-    "employedResidents": 99759,
-    "jobs": 34185
+    "residents": 23268,
+    "employedResidents": 12763,
+    "jobs": 31252
   },
   {
     "id": "kista-jarva",
     "name": "Kista and Jarva",
     "bounds": {
-      "south": 59.385,
-      "west": 17.885,
+      "south": 59.375,
+      "west": 17.91,
       "north": 59.42,
-      "east": 17.965
+      "east": 17.98
     },
-    "residents": 80310,
-    "employedResidents": 35817,
-    "jobs": 57193
+    "residents": 13769,
+    "employedResidents": 7144,
+    "jobs": 52393
   },
   {
     "id": "bromma-vasterort",
     "name": "Bromma and Vasterort",
     "bounds": {
-      "south": 59.33,
-      "west": 17.825,
-      "north": 59.375,
-      "east": 17.97
+      "south": 59.325,
+      "west": 17.94,
+      "north": 59.38,
+      "east": 17.98
     },
-    "residents": 113562,
-    "employedResidents": 59569,
-    "jobs": 33527
+    "residents": 73178,
+    "employedResidents": 42399,
+    "jobs": 31252
+  },
+  {
+    "id": "lidingo",
+    "name": "Lidingo",
+    "bounds": {
+      "south": 59.345,
+      "west": 18.1,
+      "north": 59.42,
+      "east": 18.2
+    },
+    "residents": 23924,
+    "employedResidents": 11688,
+    "jobs": 12196
+  },
+  {
+    "id": "nacka",
+    "name": "Nacka",
+    "bounds": {
+      "south": 59.26,
+      "west": 18.08,
+      "north": 59.35,
+      "east": 18.2
+    },
+    "residents": 32032,
+    "employedResidents": 16769,
+    "jobs": 36300
+  },
+  {
+    "id": "farsta-skarpnack",
+    "name": "Farsta and Skarpnack",
+    "bounds": {
+      "south": 59.255,
+      "west": 18.04,
+      "north": 59.3,
+      "east": 18.15
+    },
+    "residents": 114756,
+    "employedResidents": 63347,
+    "jobs": 20222
+  },
+  {
+    "id": "akalla-tensta",
+    "name": "Akalla and Tensta",
+    "bounds": {
+      "south": 59.38,
+      "west": 17.9,
+      "north": 59.42,
+      "east": 17.955
+    },
+    "residents": 79430,
+    "employedResidents": 36066,
+    "jobs": 12868
+  },
+  {
+    "id": "bromma-south",
+    "name": "Southern Bromma",
+    "bounds": {
+      "south": 59.3,
+      "west": 17.92,
+      "north": 59.34,
+      "east": 17.98
+    },
+    "residents": 20568,
+    "employedResidents": 10183,
+    "jobs": 23898
   }
 ];

@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { PNG } from "pngjs";
 
-const SOURCE_ROOT = new URL("../../3dmap/data/", import.meta.url);
+const SOURCE_ROOT = new URL("../data/", import.meta.url);
 const SOURCE_MANIFEST = new URL("stockholm-patches.json", SOURCE_ROOT);
 const OUT_ROOT = new URL("../public/map/", import.meta.url);
 const OUT_PATCH_DIR = new URL("patches/", OUT_ROOT);
@@ -44,7 +44,7 @@ const origin = lonLatToMercator(center.lon, center.lat);
 await mkdir(OUT_PATCH_DIR, { recursive: true });
 
 const manifest = {
-  version: 2,
+  version: 3,
   projection: "local-web-mercator",
   worldScale: WORLD_SCALE,
   center,
@@ -123,9 +123,14 @@ function parsePatch(xml) {
     if (isBuilding && points.length >= 4 && isClosed(points)) {
       const contour = simplifyClosed(points.slice(0, -1), MAX_BUILDING_POINTS);
       if (contour.length >= 3) {
+        const oriented = signedArea(contour) < 0 ? contour.reverse() : contour;
+        const center = polygonCenter(oriented);
+        const seed = hashPoint(center);
         buildings.push({
-          h: parseHeight(tags),
-          p: flattenPoints(signedArea(contour) < 0 ? contour.reverse() : contour),
+          h: parseHeight(tags, seed),
+          t: classifyBuilding(tags),
+          s: seedShade(seed),
+          p: flattenPoints(oriented),
         });
       }
     } else if (highway && points.length >= 2) {
@@ -156,14 +161,53 @@ function decodeXml(value) {
     .replaceAll("&amp;", "&");
 }
 
-function parseHeight(tags) {
+function parseHeight(tags, seed = 0) {
   const explicit = Number.parseFloat(String(tags.height ?? "").replace(",", "."));
   if (Number.isFinite(explicit)) return clamp(round(explicit, 1), 2.5, 160);
 
   const levels = Number.parseFloat(tags["building:levels"]);
   if (Number.isFinite(levels)) return clamp(round(levels * 3.1, 1), 3, 160);
 
-  return 11;
+  // Default height: 11m ± small variation per building for visual diversity
+  const jitter = ((seed >>> 8) & 0xff) / 255; // 0-1
+  return clamp(round(9 + jitter * 5, 1), 6, 22);
+}
+
+function classifyBuilding(tags) {
+  // Returns a coarse building type used for color tinting in the renderer.
+  // Types: r (residential), c (commercial), i (industrial), u (public/landmark), d (default)
+  const b = tags.building;
+  if (b === "apartments" || b === "residential" || b === "house" || b === "detached" || b === "terrace" || b === "dormitory" || b === "bungalow") return "r";
+  if (b === "office" || b === "commercial" || b === "retail" || b === "supermarket" || b === "warehouse" || b === "kiosk") return "c";
+  if (b === "industrial" || b === "factory" || b === "manufacture" || b === "workshop" || b === "shed") return "i";
+  if (b === "cathedral" || b === "church" || b === "mosque" || b === "synagogue" || b === "temple" || b === "school" || b === "university" || b === "hospital" || b === "civic" || b === "public" || b === "museum" || b === "stadium" || b === "train_station" || b === "transportation") return "u";
+  return "d";
+}
+
+function hashPoint(point) {
+  // Deterministic 32-bit hash from centroid coords (well-distributed)
+  const x = Math.round(point.x * 100) | 0;
+  const z = Math.round(point.z * 100) | 0;
+  let h = (x * 2654435761) ^ (z * 1597334677);
+  h = Math.imul(h ^ (h >>> 16), 2246822507);
+  h = Math.imul(h ^ (h >>> 13), 3266489909);
+  h = h ^ (h >>> 16);
+  return h >>> 0;
+}
+
+function seedShade(seed) {
+  // 0-255 per-building shade variation (8-bit), used by renderer for color jitter
+  return seed & 0xff;
+}
+
+function polygonCenter(points) {
+  let x = 0;
+  let z = 0;
+  for (const p of points) {
+    x += p.x;
+    z += p.z;
+  }
+  return { x: x / points.length, z: z / points.length };
 }
 
 function flattenPoints(points) {

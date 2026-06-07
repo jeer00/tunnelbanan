@@ -74,11 +74,13 @@ const cityBaseMaterial = new THREE.MeshStandardMaterial({
 });
 const buildingWallMaterial = new THREE.MeshStandardMaterial({
   color: 0x6f725f,
+  vertexColors: true,
   roughness: 0.86,
   metalness: 0.04,
 });
 const buildingRoofMaterial = new THREE.MeshStandardMaterial({
   color: 0xa9a078,
+  vertexColors: true,
   roughness: 0.9,
   metalness: 0.02,
 });
@@ -99,10 +101,10 @@ const basemapTileHost = "https://basemaps.cartocdn.com/dark_all";
 const basemapZoom = 14;
 const basemapSubdivisions = 12;
 const stockholmBbox = {
-  south: 59.296,
-  west: 17.99,
-  north: 59.365,
-  east: 18.16,
+  south: 59.26,
+  west: 17.95,
+  north: 59.41,
+  east: 18.18,
 };
 const basemapBbox = stockholmBbox;
 
@@ -428,8 +430,8 @@ export function ThreeMap({
     scene.fog = new THREE.FogExp2(0x071018, 0.00034);
     sceneRef.current = scene;
 
-    const camera = new THREE.PerspectiveCamera(46, 1, 8, 9000);
-    camera.position.set(0, 1260, -1360);
+    const camera = new THREE.PerspectiveCamera(46, 1, 8, 14000);
+    camera.position.set(0, 2200, -2400);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({
@@ -447,7 +449,7 @@ export function ThreeMap({
     controls.dampingFactor = 0.08;
     controls.maxPolarAngle = Math.PI * 0.43;
     controls.minDistance = 120;
-    controls.maxDistance = 4200;
+    controls.maxDistance = 8000;
     controls.mouseButtons = {
       LEFT: mode === "track" ? THREE.MOUSE.ROTATE : THREE.MOUSE.PAN,
       MIDDLE: THREE.MOUSE.ROTATE,
@@ -1306,7 +1308,7 @@ export function ThreeMap({
     const camera = cameraRef.current;
     const controls = controlsRef.current;
     if (!camera || !controls) return;
-    camera.position.set(0, 1260, -1360);
+    camera.position.set(0, 2200, -2400);
     controls.target.set(0, 0, 0);
     controls.update();
   }
@@ -2006,6 +2008,7 @@ function createBuildings(
     const height = building.h * 1.45;
     const contour: THREE.Vector2[] = [];
     const overlayColor = overlayEnabled ? buildingOverlayColor(building.p, overlay) : null;
+    const typeColor = overlayEnabled ? null : buildingTypeColor(building.t, building.s);
     let baseSum = 0;
     const xs: number[] = [];
     const zs: number[] = [];
@@ -2024,10 +2027,12 @@ function createBuildings(
     for (let i = 0; i < pointCount; i += 1) {
       vertices.push(xs[i], baseY, zs[i]);
       if (overlayColor) colors.push(overlayColor.wall.r, overlayColor.wall.g, overlayColor.wall.b);
+      else if (typeColor) colors.push(typeColor.wall.r, typeColor.wall.g, typeColor.wall.b);
     }
     for (let i = 0; i < pointCount; i += 1) {
       vertices.push(xs[i], topY, zs[i]);
       if (overlayColor) colors.push(overlayColor.roof.r, overlayColor.roof.g, overlayColor.roof.b);
+      else if (typeColor) colors.push(typeColor.roof.r, typeColor.roof.g, typeColor.roof.b);
     }
 
     const triangles = THREE.ShapeUtils.triangulateShape(contour, []);
@@ -2057,6 +2062,7 @@ function createBuildings(
   if (overlayEnabled) {
     geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
   } else {
+    geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
     geometry.clearGroups();
     geometry.addGroup(0, roofIndices.length, 0);
     geometry.addGroup(roofIndices.length, wallIndices.length, 1);
@@ -2107,7 +2113,6 @@ function buildingOverlayColor(points: number[], overlay: Exclude<MapOverlay, "no
   const visualVariance = value > 0 ? 0.93 + deterministicNoise(center.x, center.z) * 0.12 : 1;
   let roof: THREE.Color;
   if ((overlay === "unmet" || overlay === "flows") && area) {
-    // Red where homes >> jobs, blue where jobs >> homes
     const direction = area.residents > area.jobs ? 1 : -1;
     const imbalance = Math.abs(area.residents - area.jobs);
     const imbalanceNormalized = imbalance > 0
@@ -2121,6 +2126,39 @@ function buildingOverlayColor(points: number[], overlay: Exclude<MapOverlay, "no
   }
   const wall = roof.clone().multiplyScalar(value > 0 ? 0.66 : 0.48);
   return { roof, wall };
+}
+
+// Building-type tints for the non-overlay base view. Returns a {roof, wall} pair.
+// Slight per-building shade variation comes from the seed (0-255).
+function buildingTypeColor(type: string | undefined, seed: number | undefined) {
+  const variant = ((seed ?? 0) - 128) / 256; // -0.5 to 0.5
+  const base = buildingBaseColor(type);
+  const roof = base.roof.clone();
+  const wall = base.wall.clone();
+  // Apply per-building shade: roof brighter, wall darker
+  roof.r = clamp01(roof.r + variant * 0.12);
+  roof.g = clamp01(roof.g + variant * 0.12);
+  roof.b = clamp01(roof.b + variant * 0.10);
+  wall.r = clamp01(wall.r + variant * 0.08);
+  wall.g = clamp01(wall.g + variant * 0.08);
+  wall.b = clamp01(wall.b + variant * 0.07);
+  return { roof, wall };
+}
+
+function clamp01(v: number) {
+  return Math.max(0, Math.min(1, v));
+}
+
+const BUILDING_BASE_COLORS: Record<string, { roof: THREE.Color; wall: THREE.Color }> = {
+  r: { roof: new THREE.Color(0xb1a06e), wall: new THREE.Color(0x736856) }, // residential: warm beige
+  c: { roof: new THREE.Color(0x9aa4ad), wall: new THREE.Color(0x5a6470) }, // commercial: cool gray
+  i: { roof: new THREE.Color(0x7d8189), wall: new THREE.Color(0x4a4e54) }, // industrial: dark steel
+  u: { roof: new THREE.Color(0xd1b07a), wall: new THREE.Color(0x8a7050) }, // public/landmark: golden
+  d: { roof: new THREE.Color(0xa9a078), wall: new THREE.Color(0x6f725f) }, // default: original palette
+};
+
+function buildingBaseColor(type: string | undefined) {
+  return BUILDING_BASE_COLORS[type ?? "d"] || BUILDING_BASE_COLORS.d;
 }
 
 function unmetColor(t: number, direction: 1 | -1) {
