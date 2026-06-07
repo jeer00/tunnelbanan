@@ -94,6 +94,7 @@ export type AggregateDemandArea = {
   residents: number;
   employedResidents?: number;
   jobs: number;
+  polygon?: [number, number][];
 };
 
 export type EconomyEntry = {
